@@ -5,7 +5,7 @@ clear; clc; close all;
 Space.size = [20, 2, 3];  % Uzay boyutları [m]
 
 % Zaman uzayı
-Time.dt = 1e-2;        % Örnekleme periyodu [sn]
+Time.dt = 1e-3;        % Örnekleme periyodu [sn]
 Time.tmax = 5;         % Simülasyon süresi [sn]
 Time.axis = 0:Time.dt:Time.tmax; % Zaman uzayı [sn]
 
@@ -29,6 +29,7 @@ Drop.weight = 0.05e-3; % Bir damlanın ağırlığı [kg]
 % Birim zamanda üretilecek damla sayısı
 Drop.ngen = ((Rain.intensity*Space.size(1)*Space.size(2))/Drop.weight)*...
             (Time.dt/(12*60*60));
+Drop.dp = 0; % Üretilecek damla sayısının virgülden sonraki bölümü
 % Damlaların hareket vektörü
 Drop.movement = [tan(Rain.angle(1)), tan(Rain.angle(2)), 1]*...
                 (Rain.velocity*Time.dt);
@@ -46,7 +47,7 @@ if plottingFlag == true
     view(32, 20);
     xlabel("X [m]"); ylabel("Y [m]"); zlabel("Z [m]");
     gifFile = 'Yagmur3D.gif';
-    exportgraphics(f1, gifFile);
+    % exportgraphics(f1, gifFile);
 end
 
 
@@ -56,53 +57,13 @@ end
 for i = 1:length(Time.axis)
     
     % Yağmur damlalarının üretimi ve hareketi
-    Drop = f_Rainfall(Drop, Space, plottingFlag);
+    Drop = f_Rainfall3D(Drop, Space, plottingFlag);
     
     % Görselleştirme
     if plottingFlag
-        exportgraphics(f1, gifFile, Append=true);
+        % exportgraphics(f1, gifFile, Append=true);
         drawnow;
         pause(Time.dt);
-    end
-end
-
-
-%% Fonksiyonlar
-
-function [Drop] = f_Rainfall(Drop, Space, plottingFlag)
-% Bu fonksiyon yağmur damlalarını üretir, hareket ettirir ve 
-% görselleştirir.
-% Girdiler ----
-% Drop         : Damlaların bilgilerini içeren structure 
-% Space        : Yağmurun yağdığı uzayın bilgileri
-% prottingFlag : Görselleştirme bayrağı
-% Çıktılar ----
-% Drop         : Damlaların güncellenmiş bilgileri
-% -------------
-    
-    % Damlaların üretimi
-    Drop.positions = [Drop.positions;
-                     Space.size(1)*rand(round(Drop.ngen), 1), ...
-                     Space.size(2)*rand(round(Drop.ngen), 1), ...
-                     Space.size(3)*ones(round(Drop.ngen), 1)];
-    
-    % Damlaların hareketi
-    Drop.positions(:, 1) = Drop.positions(:, 1) + Drop.movement(1);
-    Drop.positions(:, 2) = Drop.positions(:, 2) + Drop.movement(2);
-    Drop.positions(:, 3) = Drop.positions(:, 3) - Drop.movement(3);
-    
-    % Yere çarpan damlaların silinmesi
-    Drop.positions(Drop.positions(:,3)<0, :) = [];
-    
-    % Damlaların görselleştirilmesi
-    if plottingFlag == true 
-        scatter3(Drop.positions(:, 1), Drop.positions(:, 2), ...
-                 Drop.positions(:, 3), "Blue", "Marker", ".");
-        xlim([0, Space.size(1)]); 
-        ylim([0, Space.size(2)]);
-        zlim([0, Space.size(3)]);
-        view(32, 20);
-        xlabel("X [m]"); ylabel("Y [m]"); zlabel("Z [m]");
     end
 end
 
