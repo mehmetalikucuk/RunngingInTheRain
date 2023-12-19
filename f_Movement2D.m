@@ -24,14 +24,15 @@ function [Object] = f_Movement2D(Object, Space, plottingFlag)
                     Object.position(2)-Object.size(2)/2,...
                     Object.position(2)+Object.size(2)/2];
     
-    % Görselleştirme için oluşturulan değişkenler
-    Draw.x = [Object.edges(1,1), Object.edges(1,2), Object.edges(1,2), ...
-              Object.edges(1,1), Object.edges(1,1)];
-    Draw.y = [Object.edges(2,1), Object.edges(2,1), Object.edges(2,2), ...
-              Object.edges(2,2), Object.edges(2,1)];
-    
     % Nesnenin görselleştirilmesi
     if plottingFlag == true
+        
+        % Görselleştirme için oluşturulan değişkenler
+        Draw.x = [Object.edges(1,1), Object.edges(1,2), Object.edges(1,2), ...
+                  Object.edges(1,1), Object.edges(1,1)];
+        Draw.y = [Object.edges(2,1), Object.edges(2,1), Object.edges(2,2), ...
+                  Object.edges(2,2), Object.edges(2,1)];
+
         plot(Draw.x, Draw.y, 'Black', "LineWidth", 1);
         xlim([0, Space.size(1)]); ylim([0, Space.size(2)]);
         xlabel("X [m]"); ylabel("Y [m]");
